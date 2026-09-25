@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Julius Gilang Nugroho | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0f14;
+        --surface: #0f1720;
+        --surface-2: #141e29;
+        --line: #22303c;
+        --text: #eaf1f2;
+        --muted: #8ca0ac;
+        --emerald: #34d399;
+        --cyan: #22d3ee;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        overflow-x: hidden;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .rail {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--line) 8%,
+          var(--line) 92%,
+          transparent
+        );
+      }
+      .node {
+        width: 9px;
+        height: 9px;
+        border-radius: 9999px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+      }
+      .node.active {
+        background: var(--emerald);
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.12);
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      .card:hover {
+        border-color: #2c3e4c;
+      }
+      .chip {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 3px 9px;
+        color: var(--muted);
+        background: var(--surface-2);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      .reveal.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+      ::selection {
+        background: rgba(52, 211, 153, 0.25);
+      }
+      a {
+        color: inherit;
+      }
+      .grad-text {
+        background: linear-gradient(90deg, var(--emerald), var(--cyan));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .bg-fx {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .bg-fx .grid-fx {
+        position: absolute;
+        inset: -2px;
+        background-image: radial-gradient(
+          rgba(140, 160, 172, 0.16) 1px,
+          transparent 1px
+        );
+        background-size: 28px 28px;
+        mask-image: radial-gradient(
+          ellipse 80% 60% at 50% 0%,
+          #000 40%,
+          transparent 100%
+        );
+      }
+      .blob {
+        position: absolute;
+        border-radius: 9999px;
+        filter: blur(100px);
+        opacity: 0.28;
+        animation: float 20s ease-in-out infinite;
+      }
+      .blob.b1 {
+        background: var(--emerald);
+        width: 460px;
+        height: 460px;
+        top: -160px;
+        right: -140px;
+      }
+      .blob.b2 {
+        background: var(--cyan);
+        width: 400px;
+        height: 400px;
+        top: 30vh;
+        left: -160px;
+        animation-delay: -7s;
+      }
+      .blob.b3 {
+        background: var(--emerald);
+        width: 340px;
+        height: 340px;
+        bottom: -140px;
+        right: 8vw;
+        animation-delay: -13s;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(26px, -24px) scale(1.1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .blob {
+          animation: none;
+        }
+      }
+
+      .avatar-box {
+        width: 10rem;
+        height: 13.5rem;
+        border-radius: 8px;
+        background: var(--surface-2);
+        border: 1px dashed var(--line);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .menu-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+      .menu-panel.open {
+        max-height: 20rem;
+      }
+      .burger-bar {
+        display: block;
+        height: 1.5px;
+        width: 20px;
+        background: currentColor;
+        transition:
+          transform 0.25s ease,
+          opacity 0.25s ease;
+      }
+      /* Keep the portrait rectangular while adapting to smaller screens. */
+      .avatar-box {
+        width: 10rem;
+        height: 12rem;
+        border: 0;
+        border-radius: 12px;
+        padding: 0;
+        border: 3px solid transparent;
+        background:
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          linear-gradient(145deg, rgba(52, 211, 153, .9), rgba(34, 211, 238, .45) 52%, #22303c) border-box;
+        box-shadow: 10px 10px 0 rgba(34, 211, 238, .08), 0 18px 45px rgba(0, 0, 0, .28);
+      }
+      .avatar-box img {
+        display: block;
+        border-radius: 9px;
+        filter: saturate(.9) contrast(1.03);
+      }
+      @media (min-width: 640px) { .avatar-box { width: 12rem; height: 16rem; } }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-presets="react">
+      const { useEffect, useRef, useState } = React;
+
+      /* ---------- inline icon set (lucide-style, stroke 1.8) ---------- */
+      const Icon = ({ d, size = 18, className = "" }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+          dangerouslySetInnerHTML={{ __html: d }}
+        />
+      );
+      const paths = {
+        phone:
+          '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+        mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/>',
+        pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        chat: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>',
+        link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+        github:
+          '<path d="M15 22v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91.5S17.73.15 15 2a13.38 13.38 0 0 0-6 0C6.27.15 5.09.5 5.09.5A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.75c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+        linkedin:
+          '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6Z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+        instagram:
+          '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>',
+        arrow:
+          '<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>',
+        db: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',
+        code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+        image:
+          '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+        user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        menu: '<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>',
+        close:
+          '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      };
+      const I = (name, props = {}) => <Icon d={paths[name]} {...props} />;
+
+      /* ---------- scroll reveal wrapper ---------- */
+      function Reveal({ children, className = "" }) {
+        const ref = useRef(null);
+        const [show, setShow] = useState(false);
+        useEffect(() => {
+          const el = ref.current;
+          const obs = new IntersectionObserver(
+            ([e]) => {
+              if (e.isIntersecting) {
+                setShow(true);
+                obs.disconnect();
+              }
+            },
+            { threshold: 0.15 },
+          );
+          if (el) obs.observe(el);
+          return () => obs.disconnect();
+        }, []);
+        return (
+          <div
+            ref={ref}
+            className={`reveal ${show ? "show" : ""} ${className}`}
+          >
+            {children}
+          </div>
+        );
+      }
+
+      /* ---------- section shell with pipeline rail + node ---------- */
+      function Section({ id, index, label, children }) {
+        return (
+          <section
+            id={id}
+            className="relative py-16 sm:py-20 border-t border-[var(--line)] first:border-t-0"
+          >
+            <div className="max-w-4xl mx-auto px-6 sm:px-10">
+              <Reveal className="flex items-center gap-3 mb-8">
+                <span className="node active"></span>
+                <span className="font-mono text-xs tracking-wide text-[var(--muted)]">
+                  {String(index).padStart(2, "0")} · {label}
+                </span>
+                <span className="flex-1 h-px bg-[#161F28]"></span>
+              </Reveal>
+              {children}
+            </div>
+          </section>
+        );
+      }
+
+      const skills = [
+        ["Data Analytics", "db"], ["Relational Databases", "db"],
+        ["Data Engineering", "link"], ["Data Visualization", "image"],
+        ["Excel", "db"], ["Big Data Ecosystem", "code"],
+        ["Python", "code"], ["SQL", "db"], ["PySpark", "code"],
+        ["Hadoop", "db"], ["Tableau", "image"], ["Power BI", "image"],
+        ["MySQL", "db"], ["Apache Airflow", "link"], ["Pentaho", "link"],
+      ];
+
+      const workExp = [
+        {
+          role: "Marketing Team · Team Promotion",
+          org: "BINUS University",
+          period: "Aug 2024 — Present",
+          points: [
+            "Presented BINUS programs to prospective students across 40+ high schools and education fairs.",
+            "Supported promotional events, school visits, and on-site operations.",
+            "Managed outreach and communications through Salesforce, sharing application and scholarship information.",
+            "Supported more than 50 education fairs, school events, and campus visits.",
+          ],
+        },
+      ];
+
+      const orgExp = [
+        {
+          role: "Freshmen Leader",
+          org: "BINUS University",
+          period: "Jul 2026 — Sep 2026",
+          points: [
+            "Mentored and supported 50+ freshmen during their transition into university life.",
+            "Worked within a five-member team and monitored participation throughout orientation.",
+          ],
+        },
+        {
+          role: "Activist · Volunteer Coordinator",
+          org: "Teach For Indonesia · RULES by TFISC BINUS",
+          period: "2025 — Present",
+          points: ["Contributed to volunteer coordination and community activities through TFI and RULES by TFISC BINUS."],
+        },
+        {
+          role: "Head of Logistics & Tutor",
+          org: "Teach For Indonesia Student Community",
+          period: "Dec 2024 — Present",
+          points: [
+            "Coordinated teaching materials, resources, and logistics across 20+ teams for an education program.",
+            "Taught English to 50+ children, adapting lessons to different learning needs.",
+          ],
+        },
+      ];
+
+      const projects = [
+        {
+          title: "Big Data Air Quality Analytics",
+          tags: ["Python", "PySpark", "Hadoop HDFS", "SQL", "Matplotlib", "Tableau"],
+          image: "Air_Quality_Analytics.png",
+          summary:
+            "Built a big data pipeline to analyze Brooklyn air quality and classify pollution levels, reaching 95.4% accuracy with a Random Forest model.",
+          detail:
+            "As team leader, contributed to the end-to-end architecture for ingestion, storage, processing, analysis, and visualization. Cleaned and engineered OpenAQ data, used SMOTE to address class imbalance, trained the classifier with PySpark MLlib, and presented results in Tableau.",
+          repo: "https://github.com/juliusnugroho05/Big-Data-Air-Quality-Project",
+        },
+        {
+          title: "Brazil Olist E-Commerce Analytics",
+          tags: ["Python", "Pandas", "SQL", "Seaborn", "Tableau", "Random Forest"],
+          image: "Brazil_Olist_Analytics.png",
+          summary:
+            "Analyzed Brazilian e-commerce orders to explore customer satisfaction, delivery delays, payment patterns, and sales behavior.",
+          detail:
+            "Prepared a representative 100,000-order sample from the Olist dataset, cleaned and joined relational tables, engineered delivery and purchase features, and completed EDA and review-score modeling. Findings included longer delivery times among low reviews and a sharp Black Friday order-volume spike.",
+          repo: "https://github.com/juliusnugroho05/juliusnugroho05-Data-Analytics-Project-Brazillian-E-commerce",
+        },
+        {
+          title: "Restaurant Sales Data Pipeline",
+          tags: ["Pentaho", "MySQL", "Apache Airflow", "Power BI"],
+          image: "Restaurant_Sales_Dashboard.png",
+          summary:
+            "Created an end-to-end data pipeline that cleaned 17,500+ raw restaurant transactions into 15,252 records and delivered sales dashboards.",
+          detail:
+            "Led data cleaning and transformation, designed a star schema with one fact and four dimension tables, and automated the workflow with Pentaho and Airflow. Power BI dashboards summarized 305K revenue, 15K orders, and 46K items sold; the DAG completed in four seconds.",
+          repo: "https://github.com/juliusnugroho05/Data-Engineering-Restaurant-Sales-Analytics",
+        },
+      ];
+      /* To use a real screenshot: set a project's "image" to an image URL (or a data: URI
+   for a fully self-contained file), e.g. image:"https://your-image-host/shot.png" */
+
+      function App() {
+        const [active, setActive] = useState("home");
+        const [menuOpen, setMenuOpen] = useState(false);
+        const nav = [
+          ["home", "Home"],
+          ["skills", "Skills"],
+          ["education", "Education"],
+          ["work", "Experience"],
+          ["org", "Organizations"],
+          ["projects", "Projects"],
+          ["connect", "Connect"],
+        ];
+
+        useEffect(() => {
+          const secs = nav
+            .map(([id]) => document.getElementById(id))
+            .filter(Boolean);
+          const obs = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) setActive(e.target.id);
+              });
+            },
+            { rootMargin: "-45% 0px -50% 0px" },
+          );
+          secs.forEach((s) => obs.observe(s));
+          return () => obs.disconnect();
+        }, []);
+
+        return (
+          <div className="min-h-screen relative">
+            <div className="bg-fx">
+              <div className="grid-fx"></div>
+              <div className="blob b1"></div>
+              <div className="blob b2"></div>
+              <div className="blob b3"></div>
+            </div>
+            <div className="relative z-10">
+              <div
+                className="rail hidden sm:block"
+                style={{ left: "calc(50% - 32rem + 1.5rem)" }}
+              ></div>
+
+              {/* nav */}
+              <header
+                className="sticky z-30 border-b border-[var(--line)] bg-[var(--bg)]/85 backdrop-blur"
+                style={{ top: "env(safe-area-inset-top,0px)" }}
+              >
+                <div className="max-w-4xl mx-auto px-6 sm:px-10">
+                  <div className="h-14 flex items-center justify-between">
+                    <a
+                      href="#home"
+                      className="font-mono text-sm text-[var(--emerald)]"
+                    >
+                      Julius Gilang Nugroho
+                    </a>
+                    <nav className="hidden md:flex gap-6 font-mono text-xs">
+                      {nav.map(([id, label]) => (
+                        <a
+                          key={id}
+                          href={`#${id}`}
+                          className={`transition-colors ${active === id ? "text-[var(--emerald)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
+                        >
+                          {label}
+                        </a>
+                      ))}
+                    </nav>
+                    <button
+                      aria-label="Toggle menu"
+                      onClick={() => setMenuOpen((o) => !o)}
+                      className="md:hidden w-9 h-9 grid place-items-center text-[var(--muted)]"
+                    >
+                      {I(menuOpen ? "close" : "menu", { size: 20 })}
+                    </button>
+                  </div>
+                  <div
+                    className={`menu-panel md:hidden ${menuOpen ? "open" : ""}`}
+                  >
+                    <nav className="flex flex-col gap-1 pb-4 font-mono text-sm">
+                      {nav.map(([id, label]) => (
+                        <a
+                          key={id}
+                          href={`#${id}`}
+                          onClick={() => setMenuOpen(false)}
+                          className={`px-2 py-2 rounded transition-colors ${active === id ? "text-[var(--emerald)]" : "text-[var(--muted)] hover:text-[var(--text)]"}`}
+                        >
+                          {label}
+                        </a>
+                      ))}
+                    </nav>
+                  </div>
+                </div>
+              </header>
+
+              {/* hero */}
+              <section id="home" className="relative py-20 sm:py-28">
+                <div className="max-w-4xl mx-auto px-6 sm:px-10">
+                  <Reveal className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
+                    <div className="avatar-box">
+                      <img src="Julius_Gilang_Nugroho_Portrait.png" alt="Julius Gilang Nugroho" className="w-full h-full object-contain object-center" />
+                    </div>
+                    <div>
+                      <p className="font-mono text-sm text-[var(--cyan)] mb-3">
+                        JULIUS GILANG NUGROHO · PORTFOLIO 2026
+                      </p>
+                      <h1 className="font-display text-4xl sm:text-6xl font-semibold leading-[1.05]">
+                        Hello, I am{" "}
+                        <span className="grad-text">Julius Gilang Nugroho</span>
+                      </h1>
+                    </div>
+                  </Reveal>
+                  <Reveal>
+                    <p className="text-[var(--muted)] max-w-xl leading-relaxed">
+                      Undergraduate Computer Science student at BINUS University with a growing interest in database technology, data analytics, and engineering. I have worked on projects in database design, data processing, analysis, and visualization, and am eager to gain hands-on industry experience.
+                    </p>
+                  </Reveal>
+                </div>
+              </section>
+
+              <Section id="skills" index={1} label="Technical Skills">
+                <Reveal className="flex flex-wrap gap-3">
+                  {skills.map(([name, icon]) => (
+                    <span
+                      key={name}
+                      className="card px-4 py-2 flex items-center gap-2 text-sm"
+                    >
+                      <span className="text-[var(--emerald)]">
+                        {I(icon, { size: 15 })}
+                      </span>
+                      {name}
+                    </span>
+                  ))}
+                </Reveal>
+              </Section>
+
+              <Section id="education" index={2} label="Education">
+                <div className="space-y-6">
+                  {[
+                    {
+                      school: "BINUS University",
+                      degree: "Computer Science · Database Technology",
+                      period: "2024 — 2028",
+                      note: "Undergraduate student · GPA: 3.5/4.00",
+                    },
+                    {
+                      school: "SMAK Penabur Gading Serpong",
+                      degree: "Natural Science",
+                      period: "2021 — 2024",
+                      note: "",
+                    },
+                  ].map((e) => (
+                    <Reveal key={e.school}>
+                      <div className="card p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <p className="font-display font-medium">{e.school}</p>
+                          <p className="text-sm text-[var(--muted)]">
+                            {e.degree}
+                          </p>
+                          <p className="text-sm text-[var(--muted)]">
+                            {e.note}
+                          </p>
+                        </div>
+                        <span className="chip whitespace-nowrap">
+                          {e.period}
+                        </span>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </Section>
+
+              <Section id="work" index={3} label="Work Experience">
+                <div className="space-y-8">
+                  {workExp.map((w, i) => (
+                    <Reveal key={i}>
+                      <div className="pl-6 border-l border-[#22303C] relative">
+                        <span className="node active absolute -left-[4.5px] top-1.5"></span>
+                        <p className="font-display font-medium">
+                          {w.role}{" "}
+                          <span className="text-[var(--muted)] font-normal">
+                            · {w.org}
+                          </span>
+                        </p>
+                        <p className="chip inline-block mt-2 mb-3">
+                          {w.period}
+                        </p>
+                        <ul className="space-y-1.5 text-sm text-[var(--muted)]">
+                          {w.points.map((p, j) => (
+                            <li key={j} className="flex gap-2">
+                              <span className="text-[var(--cyan)]">·</span>
+                              {p}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </Section>
+
+              <Section id="org" index={4} label="Organizational Experience">
+                <div className="space-y-8">
+                  {orgExp.map((w, i) => (
+                    <Reveal key={i}>
+                      <div className="pl-6 border-l border-[#22303C] relative">
+                        <span className="node active absolute -left-[4.5px] top-1.5"></span>
+                        <p className="font-display font-medium">
+                          {w.role}{" "}
+                          <span className="text-[var(--muted)] font-normal">
+                            · {w.org}
+                          </span>
+                        </p>
+                        <p className="chip inline-block mt-2 mb-3">
+                          {w.period}
+                        </p>
+                        <ul className="space-y-1.5 text-sm text-[var(--muted)]">
+                          {w.points.map((p, j) => (
+                            <li key={j} className="flex gap-2">
+                              <span className="text-[var(--cyan)]">·</span>
+                              {p}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </Section>
+
+              <Section id="projects" index={5} label="Projects">
+                <div className="grid sm:grid-cols-2 gap-5">
+                  {projects.map((p, i) => (
+                    <Reveal key={i}>
+                      <div className="card overflow-hidden">
+                        <div className="min-h-48 bg-[var(--surface-2)] border-b border-[var(--line)] flex flex-col items-center justify-center gap-2 relative overflow-hidden">
+                          {p.image ? (
+                            <img
+                              src={p.image}
+                              alt={p.title}
+                              className="block w-full h-auto max-h-[360px] object-contain bg-white"
+                            />
+                          ) : (
+                            <React.Fragment>
+                              <span className="text-[var(--muted)]">
+                                {I("image", { size: 26 })}
+                              </span>
+                              <span className="font-mono text-xs text-[var(--muted)]">
+                                [ project screenshot / mockup ]
+                              </span>
+                            </React.Fragment>
+                          )}
+                        </div>
+                        <div className="p-6">
+                          <p className="font-display text-lg font-medium mb-2">
+                            {p.title}
+                          </p>
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {p.tags.map((t) => (
+                              <span key={t} className="chip">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-sm mb-2">{p.summary}</p>
+                          <p className="text-sm text-[var(--muted)] mb-4">
+                            {p.detail}
+                          </p>
+                          <a
+                            href={p.repo}
+                            className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--emerald)] hover:text-[var(--cyan)]"
+                          >
+                            {I("github", { size: 13 })}Github Repo
+                          </a>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </Section>
+
+              <Section id="connect" index={6} label="Connect">
+                <Reveal>
+                  <p className="font-display text-2xl sm:text-3xl font-medium mb-3">
+                    Let's build something with data.
+                  </p>
+                  <p className="text-[var(--muted)] max-w-xl mb-8 leading-relaxed">
+                    Interested in data analytics and engineering opportunities, internships, and collaborative projects.
+                  </p>
+                </Reveal>
+                <Reveal className="flex flex-wrap gap-3 mb-10">
+                  <a
+                    href="https://www.linkedin.com/in/juliusgilangnugroho"
+                    className="card px-5 py-3 flex items-center gap-2 text-sm hover:border-[var(--emerald)] transition-colors"
+                  >
+                    {I("linkedin", {
+                      size: 16,
+                      className: "text-[var(--emerald)]",
+                    })}{" "}
+                    Connect on LinkedIn
+                  </a>
+                  <a
+                    href="https://github.com/juliusnugroho05"
+                    className="card px-5 py-3 flex items-center gap-2 text-sm hover:border-[var(--cyan)] transition-colors"
+                  >
+                    {I("github", { size: 16, className: "text-[var(--cyan)]" })}{" "}
+                    Follow on GitHub
+                  </a>
+                  <a
+                    href="https://www.instagram.com/juliusgnugroho"
+                    aria-label="Instagram"
+                    className="card w-11 h-11 grid place-items-center text-[var(--muted)] hover:text-[var(--emerald)] hover:border-[var(--emerald)] transition-colors"
+                  >
+                    {I("instagram", { size: 17 })}
+                  </a>
+                </Reveal>
+                <Reveal className="grid sm:grid-cols-2 gap-4 font-mono text-sm text-[var(--muted)]">
+                  <a href="tel:+6285780499290" className="flex items-center gap-2 hover:text-[var(--emerald)]">
+                    {I("phone", { size: 15 })} +62 857-8049-9290
+                  </a>
+                  <a href="mailto:juliusgilangnugroho2006@gmail.com" className="flex items-center gap-2 hover:text-[var(--emerald)]">
+                    {I("mail", { size: 15 })} juliusgilangnugroho2006@gmail.com
+                  </a>
+                  <span className="flex items-center gap-2">
+                    {I("pin", { size: 15 })} Tangerang
+                  </span>
+                </Reveal>
+              </Section>
+
+              <footer className="border-t border-[var(--line)] py-10">
+                <div className="max-w-4xl mx-auto px-6 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="font-mono text-xs text-[var(--muted)]">
+                    © 2026 Julius Gilang Nugroho. All rights reserved.
+                  </p>
+                </div>
+              </footer>
+            </div>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
+
